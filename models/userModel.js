@@ -36,10 +36,13 @@ const userSchema = new mongoose.Schema({
 // MIDDLEWARE
 
 userSchema.pre('save', async function(next) {
+  // only run if password was actually modified
   if(!this.isModified('password')) return next();
 
+  // hash the pastword with cost of 12
   this.password = await bcrypt.hash(this.password, 12)
 
+  // Delete passwordConfirm field
   this.passwordConfirm = undefined;
   next();
 })
