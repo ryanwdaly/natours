@@ -1,20 +1,25 @@
-const fs = require("fs");
+//const fs = require('fs')
+const User = require('./../models/userModel');
+const catchAsync = require('./../utils/catchAsync');
 
-const userList = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/users.json`)
-);
+//const userList = JSON.parse(
+//  fs.readFileSync(`${__dirname}/../dev-data/data/users.json`)
+//);
 
 ////////////////////////////////////////////////////////////////////
 // VIEW ALL USERS
-exports.getAllUsers = (req, res) => {
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find();
+
+  // SEND RESPONSE
   res.status(200).json({
-    status: "success",
-    results: userList.length,
+    status: 'success',
+    results: users.length,
     data: {
-      userList,
+      users,
     },
   });
-};
+});
 
 ////////////////////////////////////////////////////////////////////
 // VIEW SPECIFIC TOUR BY ID
@@ -25,7 +30,7 @@ exports.getUser = (req, res) => {
   const id = req.params.id * 1;
   const user = tourList.find((el) => el.id === id);
 
-  // Error if tours does not exist
+  // Error if user does not exist
   if (!user) {
     return res.status(404).json({
       status: "fail",
@@ -49,7 +54,7 @@ exports.createUser = (req, res) => {
   userList.push(newUser);
 
   fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
+    `${__dirname}/dev-data/data/user-simple.json`,
     JSON.stringify(userList),
     (err) => {
       res.status(201).json({
